@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_8816138e_089a_46fa_bf9c_edaaaf68fb34_Output_Variables_queryParameter = String | Null
+

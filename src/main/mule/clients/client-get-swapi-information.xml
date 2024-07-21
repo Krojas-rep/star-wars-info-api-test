@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="client-get-swapi-characters-information" doc:id="8816138e-089a-46fa-bf9c-edaaaf68fb34" >
+		<choice doc:name="Choice" doc:id="b9f292a7-d53a-4af2-8887-ab0fd26d2a24" >
+			<when expression='#[vars.gender == "male"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="f45921ba-eb4c-4448-b74d-6cde73a200d5" message="EL GÉNERO DETECTADO ES MALE. SE MOSTRARÁN SOLO LOS DATOS DE ESTE MISMO." category="MALE INFORMATION"/>
+				<http:request method="GET" doc:name="Request" doc:id="b33e0fb3-ea9d-4063-9152-86fe94825559" url="https://swapi.dev/api/people/" target="swapiResponse">
+		</http:request>
+				<ee:transform doc:name="Transform to csv" doc:id="fc5c33c2-80b2-4859-9bef-b44527500bee">
+			<ee:message>
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+vars.swapiResponse.results map ({
+	name: $.name,
+	height: $.height,
+	mass: $.mass,
+	hair_color: $.hair_color,
+	skin_color: $.skin_color,
+	eye_color: $.eye_color,
+	birth_year: $.birth_year,
+	gender: $.gender,
+	homeworld: $.homeworld,
+	films: ($.films joinBy ","),
+	species: ($.species joinBy ","),
+	vehicles: ($.vehicles joinBy ","),
+	starships: ($.starships joinBy ","),
+	created: $.created,
+	edited: $.edited,
+	url: $.url
+}) filter ($.gender == "male")]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+			</ee:variables>
+		</ee:transform>
+			</when>
+			<when expression='#[vars.gender == "female"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="78b63fa9-6fed-468d-be3c-306164cc7681" message="EL GENERO DETECTADO ES FEMALE. SE MOSTRARÁN SOLO LOS DATOS DE ESTE MISMO." category="FEMALE INFORMATION"/>
+				<http:request method="GET" doc:name="Request" doc:id="780d9494-e52f-43e1-ad4e-c9c285a765c6" url="https://swapi.dev/api/people/" target="swapiResponse">
+				</http:request>
+				<ee:transform doc:name="Transform to csv" doc:id="466112bf-876e-459c-8002-5367a67c71bc">
+			<ee:message>
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+vars.swapiResponse.results map ({
+	name: $.name,
+	height: $.height,
+	mass: $.mass,
+	hair_color: $.hair_color,
+	skin_color: $.skin_color,
+	eye_color: $.eye_color,
+	birth_year: $.birth_year,
+	gender: $.gender,
+	homeworld: $.homeworld,
+	films: ($.films joinBy ","),
+	species: ($.species joinBy ","),
+	vehicles: ($.vehicles joinBy ","),
+	starships: ($.starships joinBy ","),
+	created: $.created,
+	edited: $.edited,
+	url: $.url
+}) filter ($.gender == "female")]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+			</ee:variables>
+		</ee:transform>
+			</when>
+			<when expression='#[vars.gender == "n/a"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="fe2d43f9-2a4f-4528-9495-3bb4e8f9b252" message="EL GENERO DETECTADO ES N/A. SE MOSTRARÁN SOLO LOS DATOS DE ESTE MISMO." category="N/A INFORMATION" />
+				<http:request method="GET" doc:name="Request" doc:id="7444416e-a0f0-4ad2-a4a0-f4db3709984d" url="https://swapi.dev/api/people/" target="swapiResponse">
+				</http:request>
+				<ee:transform doc:name="Transform to csv" doc:id="bd7d0035-11c4-4221-bdc0-9b182cb0e4e3" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+vars.swapiResponse.results map ({
+	name: $.name,
+	height: $.height,
+	mass: $.mass,
+	hair_color: $.hair_color,
+	skin_color: $.skin_color,
+	eye_color: $.eye_color,
+	birth_year: $.birth_year,
+	gender: $.gender,
+	homeworld: $.homeworld,
+	films: ($.films joinBy ","),
+	species: ($.species joinBy ","),
+	vehicles: ($.vehicles joinBy ","),
+	starships: ($.starships joinBy ","),
+	created: $.created,
+	edited: $.edited,
+	url: $.url
+}) filter ($.gender == "n/a")]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="9a838d30-7c14-4b2a-8bac-daceb98a33d0" message="NO SE DETECTÓ UN GÉNERO, SE MOSTRARÁN TODOS LOS DATOS." category="ALL INFORMATION"/>
+				<http:request method="GET" doc:name="Request" doc:id="d1693460-2ae4-4977-b1b4-b5d2f9121e41" url="https://swapi.dev/api/people/" target="swapiResponse" >
+				</http:request>
+				<ee:transform doc:name="Transform to csv" doc:id="450f5592-06de-4a4b-b37e-7a6b7ef40d8a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+vars.swapiResponse.results map ({
+    name: $.name,
+    height: $.height,
+    mass: $.mass,
+    hair_color: $.hair_color,
+    skin_color: $.skin_color,
+    eye_color: $.eye_color,
+    birth_year: $.birth_year,
+    gender: $.gender,
+    homeworld: $.homeworld,
+    films: ($.films joinBy ","),
+    species: ($.species joinBy ","),
+    vehicles: ($.vehicles joinBy ","),
+    starships: ($.starships joinBy ","),
+    created: $.created,
+    edited: $.edited,
+    url: $.url
+})]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

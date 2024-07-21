@@ -1,0 +1,17 @@
+%dw 2.0
+
+type auto_bc3f72cd_7c50_4be6_872e_2987d3257464_Input_Payload = {
+  swapi_response: {
+    completed_successfully: String, 
+    response: {
+      message: String, 
+      _?: Any
+    } {"description": "Object that contains the message of the succesful dummy response.",
+    "label": "response"}, 
+    _?: Any
+  } {"description": "This object contains the structure for the dummy response.",
+  "label": "swapi_response"}, 
+  _?: Any
+} {"label": "Dummy respones data types",
+"description": "This raml contains all the data types of the dummy response."}
+
