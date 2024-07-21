@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="orchestrator-get-characters-information" doc:id="bc3f72cd-7c50-4be6-872e-2987d3257464" >
 		<logger level="INFO" doc:name="Logger" doc:id="891fd808-2fc7-4035-99a3-b3aabfd379ec" message="#[payload]"/>
 		<flow-ref doc:name="Call-client-get-swapi-characters-information" doc:id="6ad745b6-80ed-4935-a8bf-11b5039067ee" name="client-get-swapi-characters-information"/>
-		<logger level="INFO" doc:name="Logger" doc:id="38529ca4-7c80-417a-b2a8-5dd591fc1f12" message="#[payload]"/>
+		<flow-ref doc:name="Call-orchestrator-get-characters-information-prepare-message-for-email" doc:id="e32fcb6a-4298-4136-953d-cafa914d315e" name="orchestrator-get-characters-information-prepare-message-for-email"/>
+		<ee:transform doc:name="Final response for client" doc:id="1f9c860a-43c6-438c-9f2f-8b892106d1fd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "swapi_response": {
+    "completed_successfully": "true",
+    "response": {
+      "message": "The consulted information has been transformed to csv and sent in the corresponding file, which can be viewed in the email.",
+      "example": vars.csv
+    }
+  }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="38529ca4-7c80-417a-b2a8-5dd591fc1f12" message="INFORMACIÓN GENERADA Y ENVIADA: #[vars.csv]" />
+	</sub-flow>
+	<sub-flow name="orchestrator-get-characters-information-prepare-message-for-email" doc:id="77a7fb4c-c423-4b8f-8eb7-fbee498d65ee" >
+		<set-variable value="${system.smtp.receivers.email}" doc:name="Set Variable" doc:id="3b2a6758-092d-40ce-8edf-8c72e8eaa3bd" variableName="receiversEmails"/>
+		<parse-template doc:name="Parse Template" doc:id="87a62b45-77e9-4db2-9df7-f907da737af0" target="messageBody">
+			<content >&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;ENVÍO DE INFORMACIÓN DE PERSONAJES STAR WARS EN FORMATO CSV&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;p align=&quot;justify&quot;&gt;A quien corresponda.
+&lt;br&gt;
+Por medio del presente correo, se envía la información de los personajes del universo star wars, conforme a la consulta hecha.
+&lt;br&gt;
+Encontrará un archivo adjunto a este email, que contiene los datos en cuestión.
+&lt;br&gt;
+Estamos en contacto.
+&lt;br&gt;
+Saludos cordiales.
+&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</content>
+		</parse-template>
+		<email:send doc:name="Send" doc:id="0f172c6d-1bdc-40f2-85d4-52b0e8a6fba7" config-ref="Email_SMTP" toAddresses='#[vars.receiversEmails splitBy ","]' fromAddress="${system.smtp.sender.email}" subject="ENVÍO DE DATOS DE PERSONAJES UNIVERSO STAR WARS">
+			<email:body contentType="text/html" encoding="UTF-8">
+				<email:content ><![CDATA[#[vars.messageBody]]]></email:content>
+			</email:body>
+			<email:attachments ><![CDATA[#[{
+	"Characters_data.csv": vars.csv
+}]]]></email:attachments>
+		</email:send>
 	</sub-flow>
 </mule>

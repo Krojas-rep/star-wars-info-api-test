@@ -13,8 +13,10 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		</http:request>
 				<ee:transform doc:name="Transform to csv" doc:id="fc5c33c2-80b2-4859-9bef-b44527500bee">
 			<ee:message>
-						<ee:set-payload ><![CDATA[%dw 2.0
-output application/csv
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable variableName="csv" ><![CDATA[%dw 2.0
+output application/csv separator = ",", header = true, ignoreEmptyLine = true, escape = "", quoteValues = true
 ---
 vars.swapiResponse.results map ({
 	name: $.name,
@@ -33,9 +35,7 @@ vars.swapiResponse.results map ({
 	created: $.created,
 	edited: $.edited,
 	url: $.url
-}) filter ($.gender == "male")]]></ee:set-payload>
-			</ee:message>
-			<ee:variables>
+}) filter ($.gender == "male")]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 			</when>
@@ -45,8 +45,10 @@ vars.swapiResponse.results map ({
 				</http:request>
 				<ee:transform doc:name="Transform to csv" doc:id="466112bf-876e-459c-8002-5367a67c71bc">
 			<ee:message>
-						<ee:set-payload ><![CDATA[%dw 2.0
-output application/csv
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable variableName="csv" ><![CDATA[%dw 2.0
+output application/csv separator = ",", header = true, ignoreEmptyLine = true, escape = "", quoteValues = true
 ---
 vars.swapiResponse.results map ({
 	name: $.name,
@@ -65,9 +67,7 @@ vars.swapiResponse.results map ({
 	created: $.created,
 	edited: $.edited,
 	url: $.url
-}) filter ($.gender == "female")]]></ee:set-payload>
-			</ee:message>
-			<ee:variables>
+}) filter ($.gender == "female")]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 			</when>
@@ -77,8 +77,10 @@ vars.swapiResponse.results map ({
 				</http:request>
 				<ee:transform doc:name="Transform to csv" doc:id="bd7d0035-11c4-4221-bdc0-9b182cb0e4e3" >
 					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
-output application/csv
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="csv" ><![CDATA[%dw 2.0
+output application/csv separator = ",", header = true, ignoreEmptyLine = true, escape = "", quoteValues = true
 ---
 vars.swapiResponse.results map ({
 	name: $.name,
@@ -97,8 +99,8 @@ vars.swapiResponse.results map ({
 	created: $.created,
 	edited: $.edited,
 	url: $.url
-}) filter ($.gender == "n/a")]]></ee:set-payload>
-					</ee:message>
+}) filter ($.gender == "n/a")]]></ee:set-variable>
+					</ee:variables>
 				</ee:transform>
 			</when>
 			<otherwise >
@@ -107,8 +109,10 @@ vars.swapiResponse.results map ({
 				</http:request>
 				<ee:transform doc:name="Transform to csv" doc:id="450f5592-06de-4a4b-b37e-7a6b7ef40d8a" >
 					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
-output application/csv
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="csv" ><![CDATA[%dw 2.0
+output application/csv separator = ",", header = true, ignoreEmptyLine = true, escape = "", quoteValues = true
 ---
 vars.swapiResponse.results map ({
     name: $.name,
@@ -127,8 +131,8 @@ vars.swapiResponse.results map ({
     created: $.created,
     edited: $.edited,
     url: $.url
-})]]></ee:set-payload>
-					</ee:message>
+})]]></ee:set-variable>
+					</ee:variables>
 				</ee:transform>
 			</otherwise>
 		</choice>
